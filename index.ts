@@ -12,11 +12,18 @@ if (
     throw new Error('Required ENV variables are not set')
 }
 
+function hasKeys(obj: object, keys: string[]): boolean {
+    const obj_keys = Object.keys(obj)
+    return keys.every(key => {
+        return obj_keys.includes(key)
+    })
+}
+
 function addContactToUser(contact_id: string, user_id: string) {
 
 }
 
-const handler = (req: Request): Response => {
+const handler = async (req: Request): Promise<Response> => {
 
     const client = new Client()
 
@@ -31,10 +38,20 @@ const handler = (req: Request): Response => {
 
     switch(pathname) {
         case endpoint_url.stripe_contact_payment_success: {
+            const data = await req.json()
+            if( 
+                !data?.data?.object?.metadata || 
+                hasKeys(data.data.object.metadata, ['contact_id', 'user_id'])
+            ) {
+                return new Response(JSON.stringify({
+                    success: 'false',
+                    msg: 'Missing contact_id and user_id'
+                }), { status: 400 })
+            }
             //const { contact_id, user_id } = req.body.
             //addContactToUser()
-            return new Response(typeof req.body)
-            //break
+            return new Response('aaa')
+            break
         }
         default: {
             return new Response('404 Not found', { status: 404 })
