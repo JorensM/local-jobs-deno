@@ -55,13 +55,15 @@ function addContactToUser(
             throw new Error('Missing env vars in addContactToUser()')
         }
         console.log('4')
-        db.listDocuments<UserDocument>(
+        const promise = db.listDocuments<UserDocument>(
             DB_ID,
             COLLECTION_USERS_ID,
             [
                 Query.equal('user_id', user_id)
             ]
-        ).then( user_docs => {
+        )
+        console.log(promise)
+        promise.then( user_docs => {
             console.log('a')
             if (user_docs.total < 1) {
                 //#TODO: Create a document for user if there isn't one created
