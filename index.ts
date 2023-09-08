@@ -49,7 +49,7 @@ const handler = async (req: Request): Promise<Response> => {
             }
             
             console.log(typeof data)
-            console.log('data: ', data)
+            console.log('data: ', data.data.object)
 
             if( 
                 !data?.data?.object?.metadata || 
