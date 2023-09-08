@@ -80,9 +80,6 @@ function addContactToUser(
                 console.log('c')
                 resolve(true)
             })
-        }).catch(err => {
-            console.error('could not get user documents')
-            console.error(err)
         })
     })
 }
