@@ -54,38 +54,36 @@ async function addContactToUser(
         throw new Error('Missing env vars in addContactToUser()')
     }
     console.log('4')
-    let user_docs = null;
-    console.log(db)
-    try {
-        user_docs = await db.listDocuments<UserDocument>(
-            DB_ID,
-            COLLECTION_USERS_ID,
-            [
-                Query.equal('user_id', user_id)
-            ]
-        )
-    } catch (err) {
-        console.log('HHH')
-        console.error('error')
-        console.error(err)
-    }
-    
-    console.log('5')
-    if (user_docs!.total < 1) {
-        //#TODO: Create a document for user if there isn't one created
-        throw new Error('DB Document for user ' + user_id + ' not found')
-    }
-
-    const user_doc = user_docs!.documents[0]
-    console.log('6')
-    await db.updateDocument<UserDocument>(
+    db.listDocuments<UserDocument>(
         DB_ID,
         COLLECTION_USERS_ID,
-        user_doc.$id,
-        {
-            contacts: [ ...user_doc.contacts, contact_id]
+        [
+            Query.equal('user_id', user_id)
+        ]
+    ).then( user_docs => {
+        if (user_docs.total < 1) {
+            //#TODO: Create a document for user if there isn't one created
+            throw new Error('DB Document for user ' + user_id + ' not found')
         }
-    )
+        const user_doc = user_docs.documents[0]
+        db.updateDocument<UserDocument>(
+            DB_ID,
+            COLLECTION_USERS_ID,
+            user_doc.$id,
+            {
+                contacts: [ ...user_doc.contacts, contact_id]
+            }
+        ).then(() => {
+            return true
+        })
+    })
+    
+    console.log('5')
+    
+
+    
+    console.log('6')
+    
     console.log('7')
     return true
 }
