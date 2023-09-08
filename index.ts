@@ -48,6 +48,9 @@ const handler = async (req: Request): Promise<Response> => {
                 }))
             }
             
+            console.log(typeof data)
+            console.log('data: ', data)
+
             if( 
                 !data?.data?.object?.metadata || 
                 hasKeys(data.data.object.metadata, ['contact_id', 'user_id'])
