@@ -130,8 +130,6 @@ const handler = (req: Request): Promise<Response> => {
                             success: true,
                             msg: 'Contact has been added to user\'s contacts'
                         }))
-                    }).catch( err => {
-                        console.error(err)
                     })
                 }).catch(err => {
                     resolve( new Response(JSON.stringify({
