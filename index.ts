@@ -1,4 +1,4 @@
-import { Client, Databases, Query, Models } from 'npm:node-appwrite@^9.0.0'
+import { Client, Databases, Query, Models } from 'npm:node-appwrite'
 
 const endpoint_url = {
     stripe_contact_payment_success: '/api/stripe-contact-payment-success'
@@ -85,7 +85,7 @@ function addContactToUser(
                 resolve(true)
             })
         }).catch(err => {
-            console.log('could not get user documents')
+            console.log('log could not get user documents')
             console.error('could not get user documents')
             console.error(err)
         })
