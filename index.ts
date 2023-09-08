@@ -31,8 +31,9 @@ const handler = (req: Request): Response => {
 
     switch(pathname) {
         case endpoint_url.stripe_contact_payment_success: {
+            //const { contact_id, user_id } = req.body.
             //addContactToUser()
-            return new Response(req.body)
+            return new Response(typeof req.body)
             //break
         }
         default: {
