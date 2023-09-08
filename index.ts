@@ -38,13 +38,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     switch(pathname) {
         case endpoint_url.stripe_contact_payment_success: {
-            const data = await req.json()
+            let data = null
+            try {
+                data = await req.json()
+            } catch (err) {
+                return new Response(JSON.stringify({
+                    sucess: false,
+                    msg: err
+                }))
+            }
+            
             if( 
                 !data?.data?.object?.metadata || 
                 hasKeys(data.data.object.metadata, ['contact_id', 'user_id'])
             ) {
                 return new Response(JSON.stringify({
-                    success: 'false',
+                    success: false,
                     msg: 'Missing contact_id and user_id'
                 }), { status: 400 })
             }
