@@ -107,7 +107,9 @@ const handler = (req: Request): Promise<Response> => {
 
         const db = new Databases(client)
 
-        const pathname = new URL(req.url).pathname
+        const url = new URL(req.url)
+        const pathname = url.pathname
+        //const params = url.searchParams
 
         console.log('HTTP request at ' + pathname)
 
@@ -126,6 +128,15 @@ const handler = (req: Request): Promise<Response> => {
                         }), { status: 400 }) )
                     }
                     const { contact_id, user_id } = data.data.object.metadata
+
+                    // fetch(`https://cloud.appwrite.io/v1/functions/${params.get('id')}/executions`, {
+                    //     headers: {
+                    //         "X-Appwrite-Project": Deno.env.get('APPWRITE_PROJECT_ID')!
+                    //     },
+                    //     method: 'post',
+                    //     body: JSON.stringify(data)
+                    // }).then((res) => res.json)
+
                     console.log('1')
                     addContactToUser(contact_id, user_id, db)
                     .then(() => {
