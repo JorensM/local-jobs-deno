@@ -44,100 +44,113 @@ type UserDocument = Models.Document & {
     role: 'recruiter' | 'performer'
 }
 
-function addContactToUser(
+async function addContactToUser(
     contact_id: string, 
     user_id: string, 
     db: Databases
 ) {
-    return new Promise((resolve) => {
-        console.log('3')
-        if(!DB_ID || !COLLECTION_USERS_ID) {
-            throw new Error('Missing env vars in addContactToUser()')
+    console.log('3')
+    if(!DB_ID || !COLLECTION_USERS_ID) {
+        throw new Error('Missing env vars in addContactToUser()')
+    }
+    console.log('4')
+    db.listDocuments<UserDocument>(
+        DB_ID,
+        COLLECTION_USERS_ID,
+        [
+            Query.equal('user_id', user_id)
+        ]
+    ).then( user_docs => {
+        if (user_docs.total < 1) {
+            //#TODO: Create a document for user if there isn't one created
+            throw new Error('DB Document for user ' + user_id + ' not found')
         }
-        console.log('4')
-        db.listDocuments<UserDocument>(
+        const user_doc = user_docs.documents[0]
+        db.updateDocument<UserDocument>(
             DB_ID,
             COLLECTION_USERS_ID,
-            [
-                Query.equal('user_id', user_id)
-            ]
-        ).then( user_docs => {
-            if (user_docs.total < 1) {
-                //#TODO: Create a document for user if there isn't one created
-                throw new Error('DB Document for user ' + user_id + ' not found')
+            user_doc.$id,
+            {
+                contacts: [ ...user_doc.contacts, contact_id]
             }
-            const user_doc = user_docs.documents[0]
-            db.updateDocument<UserDocument>(
-                DB_ID,
-                COLLECTION_USERS_ID,
-                user_doc.$id,
-                {
-                    contacts: [ ...user_doc.contacts, contact_id]
-                }
-            ).then(() => {
-                resolve(true)
-            })
+        ).then(() => {
+            return true
         })
     })
+    
+    console.log('5')
+    
+
+    
+    console.log('6')
+    
+    console.log('7')
+    return true
 }
 
 function res<T = object | string | number>(data: T, status = 200){ 
     return new Response(JSON.stringify(data), { status })
 }
 
-const handler = (req: Request): Promise<Response> => {
-    return new Promise((resolve) => {
-        const client = new Client()
+const handler = async (req: Request): Promise<Response> => {
 
-        client
-            .setEndpoint(Deno.env.get('APPWRITE_ENDPOINT')!)
-            .setKey(Deno.env.get('APPWRITE_API_KEY')!)
-            .setProject(Deno.env.get('APPWRITE_PROJECT_ID')!)
+    const client = new Client()
 
-        const db = new Databases(client)
+    client
+        .setEndpoint(Deno.env.get('APPWRITE_ENDPOINT')!)
+        .setKey(Deno.env.get('APPWRITE_API_KEY')!)
+        .setProject(Deno.env.get('APPWRITE_PROJECT_ID')!)
 
-        const pathname = new URL(req.url).pathname
+    const db = new Databases(client)
 
-        console.log('HTTP request at ' + pathname)
+    const pathname = new URL(req.url).pathname
 
-        switch(pathname) {
-            case endpoint_url.stripe_contact_payment_success: {
-                // let data = null
+    console.log('HTTP request at ' + pathname)
 
-                req.json().then((data) => {
-                    if( 
-                        !data?.data?.object?.metadata || 
-                        !hasKeys(data.data.object.metadata, ['contact_id', 'user_id'])
-                    ) {
-                        resolve( new Response(JSON.stringify({
-                            success: false,
-                            msg: 'Missing contact_id and user_id'
-                        }), { status: 400 }) )
-                    }
-                    const { contact_id, user_id } = data.data.object.metadata
-                    console.log('1')
-                    addContactToUser(contact_id, user_id, db)
-                    .then(() => {
-                        resolve(res({
-                            success: true,
-                            msg: 'Contact has been added to user\'s contacts'
-                        }))
-                    })
-                }).catch(err => {
-                    resolve( new Response(JSON.stringify({
-                        sucecss: false,
-                        msg: err.message
-                    })))
-                })
-                break
+    switch(pathname) {
+        case endpoint_url.stripe_contact_payment_success: {
+            let data = null
+            try {
+                data = await req.json()
+            } catch (err) {
+                return new Response(JSON.stringify({
+                    sucess: false,
+                    msg: err.message
+                }))
             }
-            default: {
-                return new Response('404 Not found', { status: 404 })
+
+            if( 
+                !data?.data?.object?.metadata || 
+                !hasKeys(data.data.object.metadata, ['contact_id', 'user_id'])
+            ) {
+                return new Response(JSON.stringify({
+                    success: false,
+                    msg: 'Missing contact_id and user_id'
+                }), { status: 400 })
             }
+            const { contact_id, user_id } = data.data.object.metadata
+            console.log('1')
+            try {
+                await addContactToUser(contact_id, user_id, db)
+            } catch (err) {
+                console.log('2')
+                console.error(err)
+                return res({
+                    success: false,
+                    msg: err.message
+                }, 400)
+            }
+            
+            return res({
+                success: true,
+                msg: 'Contact added to user\'s contacts list'
+            })
         }
+        default: {
+            return new Response('404 Not found', { status: 404 })
+        }
+    }
 
-    })
-    
     //console.log(request)
     //return new Response("hello from deno new!", { status : 200 })
 }
