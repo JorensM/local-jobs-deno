@@ -47,13 +47,10 @@ const handler = async (req: Request): Promise<Response> => {
                     msg: err.message
                 }))
             }
-            
-            console.log(typeof data)
-            console.log('data: ', data.data.object)
 
             if( 
                 !data?.data?.object?.metadata || 
-                hasKeys(data.data.object.metadata, ['contact_id', 'user_id'])
+                !hasKeys(data.data.object.metadata, ['contact_id', 'user_id'])
             ) {
                 return new Response(JSON.stringify({
                     success: false,
