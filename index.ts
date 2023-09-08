@@ -55,8 +55,6 @@ function addContactToUser(
             throw new Error('Missing env vars in addContactToUser()')
         }
         console.log('4')
-        console.log(user_id)
-        console.log(contact_id)
         const promise = db.listDocuments<UserDocument>(
             DB_ID,
             COLLECTION_USERS_ID,
