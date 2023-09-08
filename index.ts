@@ -55,7 +55,6 @@ async function addContactToUser(
     }
     console.log('4')
     let user_docs = null;
-    console.log(db)
     try {
         user_docs = await db.listDocuments<UserDocument>(
             DB_ID,
@@ -65,7 +64,6 @@ async function addContactToUser(
             ]
         )
     } catch (err) {
-        console.log('HHH')
         console.error('error')
         console.error(err)
     }
