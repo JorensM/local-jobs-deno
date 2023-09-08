@@ -62,12 +62,10 @@ function addContactToUser(
                 Query.equal('user_id', user_id)
             ]
         ).then( user_docs => {
-            console.log('a')
             if (user_docs.total < 1) {
                 //#TODO: Create a document for user if there isn't one created
                 throw new Error('DB Document for user ' + user_id + ' not found')
             }
-            console.log('b')
             const user_doc = user_docs.documents[0]
             db.updateDocument<UserDocument>(
                 DB_ID,
@@ -77,7 +75,6 @@ function addContactToUser(
                     contacts: [ ...user_doc.contacts, contact_id]
                 }
             ).then(() => {
-                console.log('c')
                 resolve(true)
             })
         })
