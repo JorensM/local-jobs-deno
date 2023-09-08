@@ -5,4 +5,4 @@ const handler = (request: Request): Response => {
     return new Response("hello from deno new!", { status : 200 })
 }
 
-await Deno.serve(handler)
+Deno.serve(handler)
