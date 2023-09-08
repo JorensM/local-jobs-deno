@@ -1,5 +1,5 @@
 const endpoint_url = {
-    stripe_contact_payment_success: 'api/stripe_contact_payment_success'
+    stripe_contact_payment_success: '/api/stripe_contact_payment_success'
 }
 
 const handler = (request: Request): Response => {
