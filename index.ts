@@ -44,7 +44,7 @@ const handler = async (req: Request): Promise<Response> => {
             } catch (err) {
                 return new Response(JSON.stringify({
                     sucess: false,
-                    msg: err
+                    msg: err.message
                 }))
             }
             
