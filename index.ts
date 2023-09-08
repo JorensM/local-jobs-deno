@@ -1,4 +1,4 @@
-import { Client, Databases, Query, Models } from "https://deno.land/x/appwrite@9.0.0/mod.ts";
+import { Client, Databases, Query, Models } from 'npm:node-appwrite@^9.0.0'
 
 const endpoint_url = {
     stripe_contact_payment_success: '/api/stripe-contact-payment-success'
