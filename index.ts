@@ -49,7 +49,7 @@ function addContactToUser(
     user_id: string, 
     db: Databases
 ) {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
         console.log('3')
         if(!DB_ID || !COLLECTION_USERS_ID) {
             throw new Error('Missing env vars in addContactToUser()')
@@ -57,38 +57,39 @@ function addContactToUser(
         console.log('4')
         console.log(user_id)
         console.log(contact_id)
-        const promise = db.listDocuments<UserDocument>(
+        const user_docs = await db.listDocuments<UserDocument>(
             DB_ID,
             COLLECTION_USERS_ID,
             [
                 Query.equal('user_id', user_id)
             ]
         )
-        console.log(promise)
-        promise.then( user_docs => {
-            console.log('a')
-            if (user_docs.total < 1) {
-                //#TODO: Create a document for user if there isn't one created
-                throw new Error('DB Document for user ' + user_id + ' not found')
-            }
-            console.log('b')
-            const user_doc = user_docs.documents[0]
-            db.updateDocument<UserDocument>(
-                DB_ID,
-                COLLECTION_USERS_ID,
-                user_doc.$id,
-                {
-                    contacts: [ ...user_doc.contacts, contact_id]
-                }
-            ).then(() => {
-                console.log('c')
-                resolve(true)
-            })
-        }).catch(err => {
-            console.log('could not get user documents')
-            console.error('could not get user documents')
-            console.error(err)
-        })
+        console.log(user_docs)
+        //console.log(promise)
+        // promise.then( user_docs => {
+        //     console.log('a')
+        //     if (user_docs.total < 1) {
+        //         //#TODO: Create a document for user if there isn't one created
+        //         throw new Error('DB Document for user ' + user_id + ' not found')
+        //     }
+        //     console.log('b')
+        //     const user_doc = user_docs.documents[0]
+        //     db.updateDocument<UserDocument>(
+        //         DB_ID,
+        //         COLLECTION_USERS_ID,
+        //         user_doc.$id,
+        //         {
+        //             contacts: [ ...user_doc.contacts, contact_id]
+        //         }
+        //     ).then(() => {
+        //         console.log('c')
+        //         resolve(true)
+        //     })
+        // }).catch(err => {
+        //     console.log('could not get user documents')
+        //     console.error('could not get user documents')
+        //     console.error(err)
+        // })
     })
 }
 
