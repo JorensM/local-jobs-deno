@@ -140,7 +140,7 @@ const handler = (req: Request): Promise<Response> => {
                 break
             }
             default: {
-                return new Response('404 Not found', { status: 404 })
+                resolve( new Response('404 Not found', { status: 404 }) )
             }
         }
 
