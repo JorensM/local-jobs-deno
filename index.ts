@@ -85,6 +85,7 @@ function addContactToUser(
                 resolve(true)
             })
         }).catch(err => {
+            console.log('log could not get user documents')
             console.error('could not get user documents')
             console.error(err)
         })
